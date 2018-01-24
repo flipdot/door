@@ -160,7 +160,7 @@ void main(void) {
         res = ADRES&0x3FF;        // get 10bit result
         mean[j++] = res;          
         if (j >= SAMPLES){
-            while(j--){
+            while(--j){
                 sum += mean[j];
             }
             sum /= SAMPLES;
