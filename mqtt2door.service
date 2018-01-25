@@ -1,0 +1,18 @@
+[Unit]
+Description=MQTT2door
+After=syslog.target
+
+[Service]
+Type=simple
+User=door
+Group=door
+WorkingDirectory=/home/door
+ExecStart=/usr/bin/python /home/door/mqtt2door.py
+SyslogIdentifier=mqtt2door
+StandardOutput=syslog
+StandardError=syslog
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
