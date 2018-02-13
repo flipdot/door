@@ -4,7 +4,7 @@ import logging
 import logging.handlers
 import sys
 
-
+import door_lib
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -21,27 +21,12 @@ def on_close_request(client, userdata, msg):
     if msg.topic == "actor/door/close" or \
        msg.payload.startswith('{"esp_id":"2c:3a:e8:27:44:01:","switch_closed":true'):
         logger.info(msg.topic+" "+str(msg.payload))
-        close()
+        door_lib.close()
 
 def on_disconnect(client, userdata, rc):
     if rc != 0:
         logger.info("unexpected disconnect")
         sys.exit(1)
-
-def close():
-    s = serial.Serial("/dev/ttyAMA0", baudrate=9600, timeout=10)
-
-    try:
-        adc = int(s.readline().split(" ")[0])
-        if adc > 500:
-            s.write('0')
-        else:
-            client.publish("error/door", "already closed")  
-    except Exception as e:
-        print(e)
-        pass
-    s.close()
-
    
 client = mqtt.Client()
 client.on_message = on_close_request
