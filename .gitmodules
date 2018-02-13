@@ -1,0 +1,3 @@
+[submodule "ldap-user"]
+	path = ldap_user
+	url = git@github.com:flipdot/ldap-user.git

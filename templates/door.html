@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Door{% endblock %}
+
+{% block content %}
+<nav class="site-header">
+    <a class="navbar-link" href="{{ url_for('logout') }}">
+        <i class="fa fa-sign-out" aria-hidden="true"></i>
+        Logout
+    </a>
+</nav>
+
+<h1>
+    What do you want?
+</h1>
+<h3>
+    Door state: {{ state }}
+    {{ state_raw }}
+</h3>
+<form action="{{ url_for('door') }}" method="post">
+    <div class="form-group">
+        <button class="btn btn-lg btn-success" type="submit" name="action" value="opendoor">
+            <span style="font-size: x-large">&#128682;</span>
+            Open Door
+        </button>
+
+        <button class="btn btn-lg btn-success" type="submit" name="action" value="closedoor">
+            <span style="font-size: x-large">&#128274;</span>
+            Close Door
+        </button>
+    </div>
+</form>
+{% endblock %}

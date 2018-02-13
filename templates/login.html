@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <form action="{{ url_for('door') }}" method="post">
+        <div class="form-group">
+        <button class="btn btn-lg btn-success" type="submit" name="action" value="closedoor">
+            <span style="font-size: x-large">&#128274;</span>
+            Close Door
+        </button>
+        </div>
+    </form>
+
+    <h1>
+        Log in to open door or view status.
+    </h1>
+    <form action="{{ url_for('login') }}" method="post">
+        <div class="form-group">
+            <label for="uid" class="col-sm-2 col-form-label">Username</label>
+            <input class="form-control" type="text" name="uid" id="uid"/>
+        </div>
+        <div class="form-group">
+            <label for="password" class="col-sm-2 col-form-label">Password</label>
+            <input class="form-control" type="password" name="password" id="password" />
+        </div>
+        <div class="form-group">
+            <button class="btn btn-success" type="submit" value="login">
+                <i class="fa fa-sign-in" aria-hidden="true"></i>
+                Login
+            </button>
+        </div>
+    </form>
+
+    <h3><a href="http://ldap.fd/">Forgot Password?</a></h3>
+{% endblock %}
