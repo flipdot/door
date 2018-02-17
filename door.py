@@ -19,7 +19,7 @@ logger.addHandler(handler)
 
 with door_lib.get_serial() as s:
     try:
-        door_is_open, adc = door_lib.get_state()
+        door_is_open, adc = door_lib.get_state(s)
         if door_is_open:
             s.write('0')
             print("ade", adc)
