@@ -1,18 +1,22 @@
 #!/usr/bin/python2 -u
 
 import logging
-
+import sys
 from datetime import datetime, timedelta
 
 from flask import Flask, render_template, session, request, redirect, url_for
 
+import acme
+import config
 import door_lib
+import ldap_user.config as ldap_config
 from ldap_user.flipdotuser import FlipdotUser
 from ldap_user.webapp import FrontendError
-import ldap_user.config as ldap_config
-import config
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.DEBUG if config.DEBUG else logging.INFO,
+    format="[%(levelname)s][%(name)s] %(message)s")
+log = logging.getLogger("web")
 
 app = Flask(__name__, )
 
@@ -63,10 +67,10 @@ def door():
         if 'is_member' not in user['meta'] or not user['meta']['is_member']:
             return render_template('login.html')
 
-        logging.info("Opening door.")
+        log.info("Opening door.")
         door_lib.open()
     else:
-        logging.info("Closing door.")
+        log.info("Closing door.")
         door_lib.close()
     global door_time
     door_time = None
@@ -86,5 +90,12 @@ def is_door_open():
     return door_open
 
 if __name__ == '__main__':
+    log.info("argv: %s", sys.argv)
+    tls = acme.ACME(app, staging=config.STAGING)
     app.secret_key = ldap_config.SECRET
-    app.run(port=config.PORT, debug=True, )
+    app.run(host="0.0.0.0", port=config.PORT, debug=True,
+        threaded=True, processes=0,
+        use_reloader=False)
+    tls.stop()
+    tls.thread.join()
+

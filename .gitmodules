@@ -1,3 +1,6 @@
 [submodule "ldap-user"]
 	path = ldap_user
 	url = https://github.com/flipdot/ldap-user
+[submodule "acme.sh"]
+	path = acme.sh
+	url = https://github.com/Neilpang/acme.sh
