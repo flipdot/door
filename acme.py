@@ -29,9 +29,10 @@ class ACME(object):
             self.handle_challenge)
 
         self.context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        self.https_thread = None
         self.try_load_cert()
         self.thread = threading.Thread(target=self.run)
-        self.https_thread = None
+        self.thread.daemon = True
         self.do_run = True
         self.cond = threading.Condition()
         self.thread.start()

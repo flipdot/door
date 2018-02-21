@@ -48,9 +48,9 @@ def login():
             session['pass'] = pwd
         else:
             session.pop('uid', None)
-        return redirect(url_for('index'))
+        return redirect('/')
     else:
-        return redirect(url_for('index'))
+        return redirect('/')
 
 @app.route('/logout')
 def logout():
