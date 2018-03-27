@@ -6,3 +6,4 @@ EMAIL = "my@invalid.email"
 
 DEBUG=False
 STAGING=True
+fake_door = True
