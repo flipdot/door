@@ -1,18 +1,22 @@
 import contextlib
 import logging
 
+import requests
 import serial
 
 import config
 
+base_url = "https://api.flipdot.org/sensors/door/locked/"
 
 def close():
     with get_serial() as s:
         try:
             if is_open(s):
                 s.write('0')
+                send_api(True)
                 return True
             else:
+                send_api(True)
                 return False
         except Exception as e:
             print(e)
@@ -23,12 +27,22 @@ def open():
         try:
             if not is_open(s):
                 s.write('1')
+                send_api(False)
                 return True
             else:
+                send_api(False)
                 return False
         except Exception as e:
             print(e)
             pass
+
+
+def send_api(value):
+    try:
+        requests.get(base_url + str(value), timeout=3)
+    except Exception as e:
+        print("error posting status", repr(e))
+
 
 def get_serial():
     s = serial.Serial(config.SERIAL, baudrate=9600, timeout=10)
