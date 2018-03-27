@@ -1,6 +1,7 @@
 #!/usr/bin/python2 -u
 
 import logging
+import random
 import sys
 from datetime import datetime, timedelta
 
@@ -26,9 +27,10 @@ def index():
         return render_template('login.html')
     else:
         open, open_raw = is_door_open()
+        dn, user = FlipdotUser().getuser(session['uid'])
         return render_template('door.html',
             state="Open" if open else "Closed",
-            state_raw=open_raw)
+            state_raw=open_raw, user=user)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -65,7 +67,8 @@ def door():
             return render_template('login.html')
         dn, user = FlipdotUser().getuser(session['uid'])
         if 'is_member' not in user['meta'] or not user['meta']['is_member']:
-            return render_template('login.html')
+            return render_template("error.html",
+                message="You are not allowed to open the door.")
 
         log.info("Opening door.")
         door_lib.open()
@@ -80,6 +83,8 @@ cache_time = timedelta(seconds=10)
 door_time = None
 door_open = None
 def is_door_open():
+    if hasattr(config, 'fake_door') and config.fake_door:
+        return (random.random() > 0.5, random.randint(1,999))
     global door_open, door_time
     if door_open and door_time and door_time + cache_time > datetime.utcnow():
         return door_open

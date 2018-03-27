@@ -10,21 +10,34 @@
     </a>
 </nav>
 
+{% if user.meta and user.meta.is_member %}
+{% set member = true %}
+{% else %}
+{% set member = false %}
+{% endif %}
+
 <h1>
-    What do you want?
+    Welcome, {{ user.cn[0] }}.
 </h1>
 <h3>
+    What do you want?<br/>
     Door state: {{ state }}
-    {{ state_raw }}
 </h3>
+<p>
+    raw: {{ state_raw }}
+    {% if member == false %}
+        <br/><b>You cannot open the door.</b>
+    {% endif %}
+</p>
 <form action="{{ url_for('door') }}" method="post">
     <div class="form-group">
         <button class="btn btn-lg btn-success" type="submit" name="action" value="opendoor">
             <span style="font-size: x-large">&#128682;</span>
             Open Door
         </button>
-
-        <button class="btn btn-lg btn-success" type="submit" name="action" value="closedoor">
+        <button class="btn btn-lg btn-success
+            {% if not member %} disabled {% endif %}"
+            type="submit" name="action" value="closedoor">
             <span style="font-size: x-large">&#128274;</span>
             Close Door
         </button>
