@@ -13,10 +13,10 @@ def close():
         try:
             if is_open(s):
                 s.write('0')
-                send_api(True)
+                send_api(1)
                 return True
             else:
-                send_api(True)
+                send_api(1)
                 return False
         except Exception as e:
             print(e)
@@ -27,10 +27,10 @@ def open():
         try:
             if not is_open(s):
                 s.write('1')
-                send_api(False)
+                send_api(0)
                 return True
             else:
-                send_api(False)
+                send_api(0)
                 return False
         except Exception as e:
             print(e)
@@ -39,7 +39,7 @@ def open():
 
 def send_api(value):
     try:
-        requests.get(base_url + str(value), timeout=3)
+        print("posted api: ", requests.get(base_url + str(value), timeout=3).content)
     except Exception as e:
         print("error posting status", repr(e))
 
