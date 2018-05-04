@@ -1,8 +1,9 @@
-import paho.mqtt.client as mqtt
-import serial
-import logging
 import logging.handlers
 import sys
+import threading
+import time
+
+import paho.mqtt.client as mqtt
 
 import door_lib
 
@@ -27,7 +28,16 @@ def on_disconnect(client, userdata, rc):
     if rc != 0:
         logger.info("unexpected disconnect")
         sys.exit(1)
-   
+
+def updater():
+    while True:
+        time.sleep(10)
+        door_lib.update_api()
+
+door_state_updater = threading.Thread(target=updater)
+door_state_updater.daemon = True
+door_state_updater.start()
+
 client = mqtt.Client()
 client.on_message = on_close_request
 client.on_disconnect = on_disconnect

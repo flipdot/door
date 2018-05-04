@@ -13,10 +13,10 @@ def close():
         try:
             if is_open(s):
                 s.write('0')
-                send_api(1)
+                update_api(locked=True)
                 return True
             else:
-                send_api(1)
+                update_api(locked=True)
                 return False
         except Exception as e:
             print(e)
@@ -27,17 +27,22 @@ def open():
         try:
             if not is_open(s):
                 s.write('1')
-                send_api(0)
+                update_api(locked=False)
                 return True
             else:
-                send_api(0)
+                update_api(locked=False)
                 return False
         except Exception as e:
             print(e)
             pass
 
 
-def send_api(value):
+def update_api(locked=None):
+    if locked is None:
+        with get_serial() as s:
+            locked = not is_open(s)
+
+    value = 1 if locked else 0
     try:
         print("posted api: ", requests.get(base_url + str(value), timeout=3).content)
     except Exception as e:
