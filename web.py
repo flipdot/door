@@ -96,11 +96,11 @@ def is_door_open():
 
 if __name__ == '__main__':
     log.info("argv: %s", sys.argv)
-    tls = acme.ACME(app, staging=config.STAGING)
+    #tls = acme.ACME(app, staging=config.STAGING)
     app.secret_key = ldap_config.SECRET
     app.run(host="0.0.0.0", port=config.PORT, debug=True,
         threaded=True, processes=0,
         use_reloader=False)
-    tls.stop()
-    tls.thread.join()
+    #tls.stop()
+    #tls.thread.join()
 
