@@ -1,6 +1,6 @@
 #!/bin/bash
 TARGET=/home/opendoor/.ssh/authorized_keys
-URL="http://ldapapp.fd/system/ssh_keys"
+URL="https://ldap.flipdot.space/system/ssh_keys"
 set -e
 
 rm -f $TARGET.ldap.new
