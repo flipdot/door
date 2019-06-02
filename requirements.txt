@@ -1,2 +1,3 @@
 pyserial
+smbus2
 -r ldap_user/requirements.txt

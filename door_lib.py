@@ -3,8 +3,9 @@ import logging
 from systemd.journal import JournalHandler
 
 import requests
-import serial
 from time import sleep
+
+from smbus2 import SMBus
 
 import config
 
@@ -13,11 +14,13 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 logger.addHandler(JournalHandler())
 
+addr = 0x42
+
 def close():
-    with get_serial() as s:
+    with get_serial() as bus:
         try:
-            if is_open(s):
-                s.write('0')
+            if is_open(bus):
+                bus.write_word_data(addr, 0x42, 0xCAFE)
                 return True
             else:
                 return False
@@ -25,16 +28,21 @@ def close():
             logger.exception("close")
             pass
 
-def open():
-    with get_serial() as s:
+def toggle():
+    with get_serial() as bus:
+#        import ipdb; ipdb.set_trace()
         try:
-            if not is_open(s):
-                s.write('1')
+            if not is_open(bus):
+                bus.write_word_data(addr, 0x23, 0xCAFE)
+                print("send open door cmd")
+                #s.write('1')
                 return True
             else:
+                print("already open")
+                bus.write_word_data(addr, 0x42, 0xCAFE)
                 return False
         except Exception as e:
-            logger.exception("open")
+            logger.exception("toggle")
             pass
 
 
@@ -53,27 +61,27 @@ def update_api(locked=None):
         logger.exception("error posting api status")
 
 
-def get_serial():
-    s = serial.Serial(config.SERIAL, baudrate=9600, timeout=10)
-    return contextlib.closing(s)
 
-def get_state(s):
-    for i in range(5):
-        line = s.readline()
-        logger.debug("line: {}".format(line))
-        if not line or len(line) < 3:
-            continue
-        first = line.split(" ")[0]
-        try:
-            adc = int(first)
-        except ValueError:
-            msg = "ValueError: '{}' is not a valid door state.".format(first)
-            logger.error(msg)
-            sleep(1)
-            continue
-        logger.debug("adc: {}".format(adc))
-        return adc > 500, adc
-    return None, "unk"
+def get_serial():
+    bus = SMBus(1)
+    return contextlib.closing(bus)
+
+def get_state(bus):
+
+    bus.write_word_data(addr, 0xBB, 0xCAFE) 
+    sleep(0.5)
+    #state = bus.read_word_data(addr, 0)
+    state = bus.read_byte(addr)
+    foo = bus.read_byte(addr) 
+    print("state2 %02X %c" % (state,foo))
+    if state == 0x01:
+        print("is open")
+        return True, 0
+    else:
+        print("is closed")
+        return False, 800
+        
+
 
 def is_open(s):
     door_is_open, _ = get_state(s)
