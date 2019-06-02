@@ -111,7 +111,7 @@ class ACME(object):
 
     def issue_cert(self):
         try:
-            out = sh(acme_sh + ["--renew", "-d", config.DOMAIN])
+            out = sh(acme_sh + ["--renew", "--stateless", "-d", config.DOMAIN])
         except ACMEError as e:
             if "Skip, Next renewal time is" in e.output:
                 logging.info("Cert is up-to date, renewal: %s",
