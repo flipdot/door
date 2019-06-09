@@ -30,6 +30,18 @@ def close():
             logger.exception("close")
             pass
 
+def open():
+    with get_serial() as bus:
+        try:
+            if not is_open(bus):
+                bus.write_word_data(addr, DOOR_CMD_OPEN, 0xCAFE)
+                return True
+            else:
+                return False
+        except Exception as e:
+            logger.exception("open")
+            pass
+
 def toggle():
     with get_serial() as bus:
         try:
