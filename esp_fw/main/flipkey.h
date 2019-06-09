@@ -1,0 +1,4 @@
+#ifndef ESP_DOOR_FLIPKEY_H
+#define ESP_DOOR_FLIPKEY_H
+
+#endif //ESP_DOOR_FLIPKEY_H
