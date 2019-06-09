@@ -2,6 +2,7 @@
 #define _XTAL_FREQ 16000000
 #include <xc.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 // CONFIG1
 #pragma config FOSC = INTOSC    // Oscillator Selection Bits (INTOSC oscillator: I/O function on CLKIN pin)
@@ -32,6 +33,12 @@
 #define DOOR_CLOSE_IO   LATBbits.LATB7
 #define DOOR_CLOSE_TRIS TRISBbits.TRISB7
 
+#define DOOR_BUTTON_TRIS TRISDbits.TRISD3
+#define DOOR_BUTTON_IO  PORTDbits.RD3
+
+#define DOOR_BUTTON2_TRIS   TRISCbits.TRISC4
+#define DOOR_BUTTON2_IO PORTCbits.RC4
+
 #define TRIS_OUTPUT     0
 #define TRIS_INPUT      1
 
@@ -40,13 +47,14 @@
                                 CLRWDT();             \
                             }             
 
-
+static unsigned char close_request = false;
 void sendChar(char cTx);
 void initUart(void);
 
 void interrupt interrupts(void){
     char cRX;
     unsigned char i;
+    unsigned char j;
 
     if(PIR1bits.RCIF){
         cRX = RC1REG;
@@ -59,9 +67,24 @@ void interrupt interrupts(void){
             DOOR_SWITCH_DELAY();
             DOOR_CLOSE_IO = 0;
         }else{  // echo
-            sendChar(cRX);
+            //sendChar(cRX);
         }
         PIR1bits.RCIF = 0;          //clear IF
+        return;
+    }else if(INTCONbits.IOCIF == 1){
+        if(IOCAFbits.IOCAF0){
+            DOOR_CLOSE_IO = 1;
+            DOOR_SWITCH_DELAY();
+            DOOR_CLOSE_IO = 0;
+            
+            for(j = 0; j < 20; j++){
+               DOOR_SWITCH_DELAY();  //debounce like a pro 
+            }
+            
+            
+            IOCAFbits.IOCAF0 = 0;
+        }
+        INTCONbits.IOCIF = 0;
         return;
     }
     while(1);                       // unhandled interrupt -> stop 
@@ -132,9 +155,18 @@ void main(void) {
 
     TRISAbits.TRISA0 = TRIS_INPUT;
     
+    DOOR_BUTTON_TRIS = TRIS_INPUT;
+    DOOR_BUTTON2_TRIS = TRIS_INPUT;
+    DOOR_BUTTON2_IO = 0;
+    DOOR_BUTTON_IO = 0;
+    
+    ANSELD = 0;
+    ANSELA  = 0;     // PORTA all digital
+    ANSELC = 0;
     ANSELDbits.ANSD0 = 1;         // AN20 - en analog input
-    ANSELA  = 0;                  // PORTA all digital
-
+    
+    
+    
     DOOR_CLOSE_TRIS  = TRIS_OUTPUT; 
     DOOR_CLOSE_IO    = 0;
     DOOR_OPEN_TRIS   = TRIS_OUTPUT;
@@ -148,6 +180,17 @@ void main(void) {
     sendChar('b');
     sendChar('\n');
     sendChar('\r');
+    
+    
+    IOCCP = 0;
+    IOCCN = 0;
+    IOCAP = 0;
+    IOCAN = 0;
+    IOCBP = 0;
+    IOCBN = 0;
+    IOCAPbits.IOCAP0 = 1;
+    
+    INTCONbits.IOCIE = 1;         // en int on port change module
 
     while(1){
         for(i = 0; i < 10; i++){
@@ -177,7 +220,9 @@ void main(void) {
             sendChar(PORTAbits.RA0 + '0');
             sendChar('\n');
             sendChar('\r');
+            
         }
+        
         
         if(RC1STAbits.OERR == 1){  //hel* stresstesting fixes
             sendChar('r');
