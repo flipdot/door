@@ -1,4 +1,5 @@
 import contextlib
+from enum import Enum
 import logging
 from systemd.journal import JournalHandler
 
@@ -8,6 +9,11 @@ from time import sleep
 from smbus2 import SMBus
 
 import config
+
+DOOR_CMD_OPEN = 0x23
+DOOR_CMD_CLOSE = 0x42
+DOOR_CMD_STATUS = 0xBB
+
 
 base_url = "https://api.flipdot.org/sensors/door/locked/"
 logger = logging.getLogger(__name__)
@@ -20,7 +26,7 @@ def close():
     with get_serial() as bus:
         try:
             if is_open(bus):
-                bus.write_word_data(addr, 0x42, 0xCAFE)
+                bus.write_word_data(addr, DOOR_CMD_CLOSE, 0xCAFE)
                 return True
             else:
                 return False
@@ -28,22 +34,32 @@ def close():
             logger.exception("close")
             pass
 
-def toggle():
+def open():
     with get_serial() as bus:
-#        import ipdb; ipdb.set_trace()
         try:
             if not is_open(bus):
-                bus.write_word_data(addr, 0x23, 0xCAFE)
-                print("send open door cmd")
-                #s.write('1')
+                bus.write_word_data(addr, DOOR_CMD_OPEN, 0xCAFE)
+                return True
+            else:
+                return False
+        except Exception as e:
+            logger.exception("open")
+            pass
+
+def toggle():
+    with get_serial() as bus:
+        try:
+            if not is_open(bus):
+                bus.write_word_data(addr, DOOR_CMD_OPEN, 0xCAFE)
                 return True
             else:
                 print("already open")
-                bus.write_word_data(addr, 0x42, 0xCAFE)
+                bus.write_word_data(addr, DOOR_CMD_CLOSE, 0xCAFE)
                 return False
         except Exception as e:
             logger.exception("toggle")
             pass
+
 
 
 def update_api(locked=None):
@@ -68,11 +84,11 @@ def get_serial():
 
 def get_state(bus):
 
-    bus.write_word_data(addr, 0xBB, 0xCAFE) 
+    bus.write_word_data(addr, DOOR_CMD_STATUS, 0xCAFE)
     sleep(0.5)
     #state = bus.read_word_data(addr, 0)
     state = bus.read_byte(addr)
-    foo = bus.read_byte(addr) 
+    foo = bus.read_byte(addr)
     print("state2 %02X %c" % (state,foo))
     if state == 0x01:
         print("is open")
@@ -80,7 +96,6 @@ def get_state(bus):
     else:
         print("is closed")
         return False, 800
-        
 
 
 def is_open(s):
