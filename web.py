@@ -70,10 +70,10 @@ def door():
             return render_template("error.html",
                 message="You are not allowed to open the door.")
 
-        log.info("Opening door.")
+        log.warning("DoorWeb - %s - Opening", session['user'])
         door_lib.open()
     else:
-        log.info("Closing door.")
+        log.warning("DoorWeb - %s - Closing", session.get('user', ""))
         door_lib.close()
     global door_time
     door_time = None

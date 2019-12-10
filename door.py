@@ -2,22 +2,32 @@
 from time import sleep
 import logging
 import logging.handlers
-
+import sys
 import door_lib
+from systemd.journal import JournalHandler
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-handler = logging.handlers.SysLogHandler(address='/dev/log')
+logger.handlers = []
+logging.getLogger("door_lib").handlers = []
+handler = JournalHandler()
 handler.setLevel(logging.INFO)
 
-formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 
 logger.addHandler(handler)
 
+user = ""
+if len(sys.argv) > 1:
+    user = str(sys.argv[-1].split(' ')[-1])
+
 try:
-    door_lib.toggle()
+    ret = door_lib.toggle()
+    if ret:
+        logger.warning("DoorSSH - %s - Opening", user)
+    else:
+        logger.warning("DoorSSH - %s - Closing", user)
 except Exception as e:
     print(e)
     logger.info(e)
