@@ -1,5 +1,4 @@
 #!/usr/bin/python2 -u
-import serial
 from time import sleep
 import logging
 import logging.handlers

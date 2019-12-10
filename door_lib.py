@@ -1,4 +1,5 @@
 import contextlib
+from enum import Enum
 import logging
 from systemd.journal import JournalHandler
 import requests
