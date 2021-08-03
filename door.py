@@ -24,6 +24,7 @@ if len(sys.argv) > 1:
 
 try:
     ret = door_lib.toggle()
+    door_lib.update_api(not ret)
     if ret:
         logger.warning("DoorSSH - %s - Opening", user)
     else:
