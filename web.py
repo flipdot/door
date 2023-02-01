@@ -61,8 +61,8 @@ def logout():
 
 @app.route('/door', methods=['POST'])
 def door():
-    if request.form.get('action', 'closedoor') == 'opendoor':
-
+    action = request.form.get('action', 'closedoor')
+    if action == 'opendoor' or action == 'summer':
         if 'uid' not in session:
             return render_template('login.html')
         dn, user = FlipdotUser().getuser(session['uid'])
@@ -70,8 +70,12 @@ def door():
             return render_template("error.html",
                 message="You are not allowed to open the door.")
 
-        log.warning("DoorWeb - %s - Opening", session['user'])
-        door_lib.open()
+        if action == "summer":
+            log.warning("DoorWeb - %s - Summm", session['user'])
+            door_lib.summer()
+        else:
+            log.warning("DoorWeb - %s - Opening", session['user'])
+            door_lib.open()
     else:
         log.warning("DoorWeb - %s - Closing", session.get('user', ""))
         door_lib.close()

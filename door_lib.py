@@ -9,6 +9,7 @@ import config
 
 DOOR_CMD_OPEN = 0x23
 DOOR_CMD_CLOSE = 0x42
+DOOR_CMD_SUMMER =0x10
 DOOR_CMD_STATUS = 0xBB
 
 
@@ -57,6 +58,14 @@ def toggle():
             logger.exception("toggle")
             pass
 
+def summer():
+    with get_serial() as bus:
+        try:
+            bus.write_word_data(addr, DOOR_CMD_SUMMER, 0xCAFE)
+            return True
+        except Exception as e:
+            logger.exception("summer")
+            pass
 
 
 def update_api(locked=None):
