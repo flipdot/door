@@ -1,4 +1,4 @@
-#!/usr/bin/python2 -u
+#!/usr/bin/python3 -u
 from time import sleep
 import logging
 import logging.handlers

@@ -1,4 +1,4 @@
-#!/usr/bin/python2 -u
+#!/usr/bin/python3 -u
 
 import logging
 import random
@@ -12,7 +12,7 @@ import config
 import door_lib
 import ldap_user.config as ldap_config
 from ldap_user.flipdotuser import FlipdotUser
-from ldap_user.webapp import FrontendError
+from ldap_user.frontenderror import FrontendError
 
 logging.basicConfig(
     level=logging.DEBUG if config.DEBUG else logging.INFO,
@@ -98,7 +98,7 @@ if __name__ == '__main__':
     log.info("argv: %s", sys.argv)
     #tls = acme.ACME(app, staging=config.STAGING)
     app.secret_key = ldap_config.SECRET
-    app.run(host="0.0.0.0", port=config.PORT, debug=True,
+    app.run(host="127.0.0.1", port=config.PORT, debug=True,
         threaded=True, processes=0,
         use_reloader=False)
     #tls.stop()
