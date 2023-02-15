@@ -32,6 +32,10 @@ def index():
             state="Open" if open else "Closed",
             state_raw=open_raw, user=user)
 
+@app.route('/manifest.json')
+def manifest():
+    return render_template('manifest.json')
+
 @app.route('/login', methods=['POST'])
 def login():
     if request.method == 'POST':
