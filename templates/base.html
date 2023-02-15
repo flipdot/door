@@ -1,1 +1,33 @@
-../ldap_user/templates/base.html
+<!DOCTYPE html>
+
+{% block head %}{% endblock %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>{% block title %}{% endblock %} - flipdot ldap</title>
+<link rel="stylesheet" href="/static/css/style.css">
+<link rel="stylesheet" href="/static/css/font-awesome.min.css">
+
+{% if session.username %}
+<nav class="site-header">
+    <a class="navbar-link" href="{{ url_for('index') }}">
+        <i class="fa fa-pencil" aria-hidden="true"></i>
+        Edit
+    </a>
+    <a class="navbar-link" href="{{ url_for('add') }}">
+        <i class="fa fa-plus" aria-hidden="true"></i>
+        Add user
+    </a>
+    <a class="navbar-link" href="{{ url_for('list') }}">
+        <i class="fa fa-list-ul" aria-hidden="true"></i>
+        List users
+    </a>
+    <a class="navbar-link" href="{{ url_for('logout') }}">
+        <i class="fa fa-sign-out" aria-hidden="true"></i>
+        Logout
+    </a>
+</nav>
+{% endif %}
+
+<div class="site-content">
+    {% block content %}{% endblock %}
+</div>
