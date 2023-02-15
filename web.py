@@ -5,7 +5,7 @@ import random
 import sys
 from datetime import datetime, timedelta
 
-from flask import Flask, render_template, session, request, redirect, url_for
+from flask import Flask, Response, render_template, session, request, redirect, url_for
 
 import acme
 import config
@@ -34,7 +34,7 @@ def index():
 
 @app.route('/manifest.json')
 def manifest():
-    with open('manifest.json') as f:
+    with open('templates/manifest.json') as f:
         data = f.read()
     return Response(data, mimetype='application/json')
 
