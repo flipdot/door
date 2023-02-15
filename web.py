@@ -34,7 +34,9 @@ def index():
 
 @app.route('/manifest.json')
 def manifest():
-    return render_template('manifest.json')
+    with open('manifest.json') as f:
+        data = f.read()
+    return Response(data, mimetype='application/json')
 
 @app.route('/login', methods=['POST'])
 def login():
