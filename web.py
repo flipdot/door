@@ -104,7 +104,7 @@ if __name__ == '__main__':
     log.info("argv: %s", sys.argv)
     #tls = acme.ACME(app, staging=config.STAGING)
     app.secret_key = ldap_config.SECRET
-    app.run(host="0.0.0.0", port=config.PORT, debug=True,
+    app.run(host="0.0.0.0", port=config.PORT, debug=False,
         threaded=True, processes=0,
         use_reloader=False)
     #tls.stop()
