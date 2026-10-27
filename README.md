@@ -4,6 +4,14 @@ Door control system for the flipdot hackspace. It runs on a Raspberry Pi at the
 door together with a custom PCB in Raspberry Pi HAT form factor
 (`pihat_door`).
 
+The current door control system is
+**[flipdot/flipdoor](https://code.flipdot.org/flipdot/flipdoor)**, a Rust
+project with web and SSH interfaces that serves
+[door.flipdot.space](https://door.flipdot.space). The Python implementation in
+this repository is legacy and no longer maintained. The sections below
+document that implementation and the hardware, which remain useful for
+reference.
+
 The system:
 
 - continuously reads the door state (open/closed) from a switch on the door
