@@ -1,6 +1,6 @@
 # door
 
-Door control system for the flipdot office. It runs on a Raspberry Pi at the
+Door control system for the flipdot hackspace. It runs on a Raspberry Pi at the
 door together with a custom PCB in Raspberry Pi HAT form factor
 (`pihat_door`).
 
